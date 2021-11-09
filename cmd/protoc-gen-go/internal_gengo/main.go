@@ -714,7 +714,14 @@ func fieldDefaultValue(g *protogen.GeneratedFile, f *fileInfo, m *messageInfo, f
 }
 
 func fieldJSONTagValue(field *protogen.Field) string {
-	return string(field.Desc.Name()) + ",omitempty"
+	jsonName := string(field.Desc.Name())
+	if json := field.Desc.JSONName(); field.Extendee == nil && json != "" {
+		jsonName = json
+	}
+	if field.Desc.HasOptionalKeyword() {
+		jsonName += ",omitempty"
+	}
+	return jsonName
 }
 
 func genExtensions(g *protogen.GeneratedFile, f *fileInfo) {
